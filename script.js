@@ -45,6 +45,8 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+// --- NEW SCRIPTS ---
+
 // Scroll Indicator
 window.onscroll = function() {
     var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
@@ -53,7 +55,7 @@ window.onscroll = function() {
     document.getElementById("scroll-indicator").style.width = scrolled + "%";
 };
 
-// Optional: Highlight active nav link on scroll
+// Highlight active nav link on scroll
 const sections = document.querySelectorAll('section');
 const navLinks = document.querySelectorAll('nav ul li a');
 
@@ -62,15 +64,19 @@ window.addEventListener('scroll', () => {
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
         const sectionHeight = section.clientHeight;
-        if (pageYOffset >= sectionTop - sectionHeight / 3) { // Adjust sensitivity
+        // Adjust this value to change when a section becomes 'active'
+        // For example, sectionTop - sectionHeight / 3 means it becomes active
+        // when the top of the section is 1/3rd of the way up the viewport.
+        if (pageYOffset >= sectionTop - sectionHeight / 3) {
             current = section.getAttribute('id');
         }
     });
 
     navLinks.forEach(link => {
-        link.classList.remove('active');
+        link.classList.remove('active'); // Remove active from all
+        // Check if the link's href matches the current section's ID
         if (link.getAttribute('href').includes(current)) {
-            link.classList.add('active');
+            link.classList.add('active'); // Add active to the current one
         }
     });
 });

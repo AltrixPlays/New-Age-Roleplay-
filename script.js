@@ -6,9 +6,19 @@ document.querySelectorAll('nav a').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
 
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
-        });
+        // Get the target section's ID
+        const targetId = this.getAttribute('href');
+        const targetSection = document.querySelector(targetId);
+
+        if (targetSection) {
+            targetSection.scrollIntoView({
+                behavior: 'smooth'
+            });
+
+            // After scrolling, manually set the active class
+            navLinks.forEach(link => link.classList.remove('active'));
+            this.classList.add('active');
+        }
     });
 });
 
@@ -45,7 +55,7 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// --- NEW SCRIPTS ---
+// --- ENHANCED SCRIPTS ---
 
 // Scroll Indicator
 window.onscroll = function() {
@@ -61,22 +71,52 @@ const navLinks = document.querySelectorAll('nav ul li a');
 
 window.addEventListener('scroll', () => {
     let current = '';
+    // Find the section currently in view
     sections.forEach(section => {
         const sectionTop = section.offsetTop;
         const sectionHeight = section.clientHeight;
-        // Adjust this value to change when a section becomes 'active'
-        // For example, sectionTop - sectionHeight / 3 means it becomes active
-        // when the top of the section is 1/3rd of the way up the viewport.
         if (pageYOffset >= sectionTop - sectionHeight / 3) {
             current = section.getAttribute('id');
         }
     });
 
+    // Apply active class to corresponding nav link
     navLinks.forEach(link => {
-        link.classList.remove('active'); // Remove active from all
-        // Check if the link's href matches the current section's ID
+        link.classList.remove('active');
         if (link.getAttribute('href').includes(current)) {
-            link.classList.add('active'); // Add active to the current one
+            link.classList.add('active');
         }
     });
+});
+
+
+// Section Entrance Animations using Intersection Observer (NEW)
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+        } else {
+            // Optional: Remove 'is-visible' if you want sections to re-animate on scroll back up
+            // entry.target.classList.remove('is-visible');
+        }
+    });
+}, { threshold: 0.2 }); // Trigger when 20% of the section is visible
+
+sections.forEach(section => {
+    observer.observe(section);
+});
+
+
+// Optional: Header text fade on scroll (NEW)
+const headerContent = document.querySelector('header .container'); // Select the container with h1, p, button
+
+window.addEventListener('scroll', () => {
+    const scrollPosition = window.scrollY;
+    const headerHeight = document.querySelector('header').offsetHeight;
+
+    // Calculate opacity based on scroll position
+    // Fades out completely when scrolled about 50% of header height
+    const opacity = 1 - (scrollPosition / (headerHeight * 0.5));
+    headerContent.style.opacity = Math.max(0, opacity); // Ensure opacity doesn't go below 0
+    headerContent.style.transform = `translateY(${scrollPosition * 0.2}px)`; // Subtle upward movement
 });
